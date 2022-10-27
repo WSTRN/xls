@@ -119,12 +119,19 @@ class Xls2JsonMid(Xls2):
         # Write s_OutputDataTable
         s_OutputDataTable = []
         for row in OutputDataTable.index:
-            tmp = '{:>02}'.format(OutputDataTable.loc[row, 'Pos'])
+            # tmp = '{:>02}'.format(OutputDataTable.loc[row, 'Pos'])
+            tmp = re.findall(".{2}", '{:>08}'.format(OutputDataTable.loc[row, 'Pos']))
+            tmp.reverse()
+            tmp = ' '.join(tmp)
             s_OutputDataTable.append(tmp)
-            tmp = '{:>02}'.format(OutputDataTable.loc[row, 'Neg'])
+            # tmp = '{:>02}'.format(OutputDataTable.loc[row, 'Neg'])
+            tmp = re.findall(".{2}", '{:>08}'.format(OutputDataTable.loc[row, 'Neg']))
+            tmp.reverse()
+            tmp = ' '.join(tmp)
             s_OutputDataTable.append(tmp)
             # s_OutputDataTable.append('\r\n')
         s_OutputDataTable = ' '.join(s_OutputDataTable)
+        print(s_OutputDataTable)
         RecipeFile.append(s_OutputDataTable)
         # print(s_OutputDataTable)
         
