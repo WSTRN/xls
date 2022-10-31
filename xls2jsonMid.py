@@ -86,7 +86,7 @@ class Xls2JsonMid(Xls2):
         RecipeFile.append(DmaOutputDataOffset)
         # print(DmaOutputDataOffset)
         
-        _ModeDataOffset = _DmaOutputDataOffset + int(DmaOutputDataNumber, 16)*0x02
+        _ModeDataOffset = _DmaOutputDataOffset + int(DmaOutputDataNumber, 16)*0x08
         ModeDataOffset = re.findall(".{2}", '{:>04}'.format(str(format(_ModeDataOffset, 'x'))))
         ModeDataOffset.reverse()
         ModeDataOffset = ' '.join(ModeDataOffset)
@@ -185,7 +185,7 @@ class Xls2JsonMid(Xls2):
         # print(ModeTable)
         for row in ModeTable.index:
             # print(CHL_TABLE)
-            CHL_TABLEX = re.findall(".{2}", '{:>08}'.format(str(format(CHL_TABLE[int(ModeTable.loc[row, 'CHL_TABLEX'])-1], 'x'))))
+            CHL_TABLEX = re.findall(".{2}", '{:>08}'.format(str(format(CHL_TABLE[int(ModeTable.loc[row, 'CHL_TABLEX'])], 'x'))))
             CHL_TABLEX.reverse()
             CHL_TABLEX = ' '.join(CHL_TABLEX)
             s_ModeTable.append(CHL_TABLEX)
