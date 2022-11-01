@@ -16,8 +16,13 @@ from xls2 import Xls2
 
 
 class Xls2JsonMid(Xls2):
+    def __init__(self, xlsfile, register):
+        self.xlsfile = xlsfile
+        self.ModeNumber = 0
+        self.OutputData = []
+        self.register = register
 
-    def func_xls2json(self, ModeTable, ChlGroupTable, OutputDataTable, options, xlrdsheet, index):
+    def func_xls2json(self, ModeTable, ChlGroupTable, OutputDataTable, options, xlrdsheet, index, register='PBSC'):
         json_dict = { "CfgFile" : "", "RecipeFile" : "", "BaseWaveFile" : ""}
         CfgFileString = ""
         RecipeFileString = ""
@@ -57,7 +62,7 @@ class Xls2JsonMid(Xls2):
         ParseType = '{:>02}'.format(options.loc[index, 'ParseType'])
         RecipeFile.append(ParseType)
         
-        ModeCode = re.findall(".{2}", '{:>08}'.format(options.loc[index, 'ModeCode']))
+        ModeCode = re.findall(".{2}", '{:>08}'.format(options.loc[index, 'RecipeID']))
         ModeCode.reverse()
         ModeCode = ' '.join(ModeCode)
         RecipeFile.append(ModeCode)
@@ -86,7 +91,10 @@ class Xls2JsonMid(Xls2):
         RecipeFile.append(DmaOutputDataOffset)
         # print(DmaOutputDataOffset)
         
-        _ModeDataOffset = _DmaOutputDataOffset + int(DmaOutputDataNumber, 16)*0x08
+        if register == 'PBSC':
+            _ModeDataOffset = _DmaOutputDataOffset + int(DmaOutputDataNumber, 16)*0x08
+        elif register == 'POD':
+            _ModeDataOffset = _DmaOutputDataOffset + int(DmaOutputDataNumber, 16)*0x02
         ModeDataOffset = re.findall(".{2}", '{:>04}'.format(str(format(_ModeDataOffset, 'x'))))
         ModeDataOffset.reverse()
         ModeDataOffset = ' '.join(ModeDataOffset)
@@ -119,19 +127,24 @@ class Xls2JsonMid(Xls2):
         # Write s_OutputDataTable
         s_OutputDataTable = []
         for row in OutputDataTable.index:
-            # tmp = '{:>02}'.format(OutputDataTable.loc[row, 'Pos'])
-            tmp = re.findall(".{2}", '{:>08}'.format(OutputDataTable.loc[row, 'Pos']))
-            tmp.reverse()
-            tmp = ' '.join(tmp)
-            s_OutputDataTable.append(tmp)
-            # tmp = '{:>02}'.format(OutputDataTable.loc[row, 'Neg'])
-            tmp = re.findall(".{2}", '{:>08}'.format(OutputDataTable.loc[row, 'Neg']))
-            tmp.reverse()
-            tmp = ' '.join(tmp)
-            s_OutputDataTable.append(tmp)
+            if register == 'PBSC':
+                tmp = re.findall(".{2}", '{:>08}'.format(OutputDataTable.loc[row, 'Pos']))
+                tmp.reverse()
+                tmp = ' '.join(tmp)
+                s_OutputDataTable.append(tmp)
+                tmp = re.findall(".{2}", '{:>08}'.format(OutputDataTable.loc[row, 'Neg']))
+                tmp.reverse()
+                tmp = ' '.join(tmp)
+                s_OutputDataTable.append(tmp)
+            elif register == 'POD':
+                tmp = '{:>02}'.format(OutputDataTable.loc[row, 'Pos'])
+                s_OutputDataTable.append(tmp)
+                tmp = '{:>02}'.format(OutputDataTable.loc[row, 'Neg'])
+                s_OutputDataTable.append(tmp)
+
             # s_OutputDataTable.append('\r\n')
         s_OutputDataTable = ' '.join(s_OutputDataTable)
-        print(s_OutputDataTable)
+        # print(s_OutputDataTable)
         RecipeFile.append(s_OutputDataTable)
         # print(s_OutputDataTable)
         
@@ -294,7 +307,8 @@ class Xls2JsonMid(Xls2):
         BaseWaveFileNum = '00'
         CfgChecksummedData.append(BaseWaveFileNum)
         
-        RecipeID = re.findall(".{2}", '{:>08}'.format(str(format(options.loc[index, 'RecipeID'], 'x'))))
+        RecipeID = re.findall(".{2}", '{:>08}'.format(options.loc[index, 'RecipeID']))
+        # print(RecipeID)
         RecipeID = ' '.join(RecipeID)
         CfgChecksummedData.append(RecipeID)
         RecipeVersion = re.findall(".{2}", '{:>016}'.format(str(format(options.loc[index, 'RecipeVersion'], 'x'))))
@@ -345,12 +359,12 @@ class Xls2JsonMid(Xls2):
             options = pd.read_excel(self.xlsfile,sheet_name='options',keep_default_na=False)
             workbook = xlrd.open_workbook(self.xlsfile,formatting_info=True)
             xlrdsheet = workbook.sheet_by_name(sheetModeTable)
-            self.OutputData.append(self.func_xls2json(ModeTable,ChlGroupTable,OutputDataTable,options,xlrdsheet,i))
+            self.OutputData.append(self.func_xls2json(ModeTable,ChlGroupTable,OutputDataTable,options,xlrdsheet,i,register=self.register))
 
 
 if __name__ == '__main__':
     xlsfile = sys.argv[1]
-    x2j = Xls2JsonMid(xlsfile)
+    x2j = Xls2JsonMid(xlsfile,register='PBSC')
     x2j.convert()
     output = x2j.get_data()
 

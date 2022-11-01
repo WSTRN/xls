@@ -41,7 +41,7 @@ class Xls2JsonLow(Xls2):
         ParseType = '{:>02}'.format(options.loc[index, 'ParseType'])
         RecipeFile.append(ParseType)
         
-        ModeCode = re.findall(".{2}", '{:>08}'.format(options.loc[index, 'ModeCode']))
+        ModeCode = re.findall(".{2}", '{:>08}'.format(options.loc[index, 'RecipeID']))
         ModeCode.reverse()
         ModeCode = ' '.join(ModeCode)
         RecipeFile.append(ModeCode)
@@ -281,7 +281,7 @@ class Xls2JsonLow(Xls2):
         BaseWaveFileNum = '00'
         CfgChecksummedData.append(BaseWaveFileNum)
         
-        RecipeID = re.findall(".{2}", '{:>08}'.format(str(format(options.loc[index, 'RecipeID'], 'x'))))
+        RecipeID = re.findall(".{2}", '{:>08}'.format(str(format(options.loc[index, 'RecipeID']))))
         RecipeID = ' '.join(RecipeID)
         CfgChecksummedData.append(RecipeID)
         RecipeVersion = re.findall(".{2}", '{:>016}'.format(str(format(options.loc[index, 'RecipeVersion'], 'x'))))

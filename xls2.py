@@ -9,7 +9,10 @@ class Xls2:
         self.OutputData = []
         
     def getModeNumber(self):
-        options = pd.read_excel(self.xlsfile,sheet_name='options',keep_default_na=False)
+        options = pd.read_excel(self.xlsfile,sheet_name='options',keep_default_na=True,usecols='A:D')
+        # print(options)
+        options = options.dropna(axis=0,how='any')
+        # print(options)
         self.ModeNumber = options.shape[0]
         return self.ModeNumber
 
