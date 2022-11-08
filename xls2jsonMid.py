@@ -16,10 +16,8 @@ from xls2 import Xls2
 
 
 class Xls2JsonMid(Xls2):
-    def __init__(self, xlsfile, register):
-        self.xlsfile = xlsfile
-        self.ModeNumber = 0
-        self.OutputData = []
+    def __init__(self, xlsfile, register, productName='Product'):
+        Xls2.__init__(self, xlsfile, productName)
         self.register = register
 
     def func_xls2json(self, ModeTable, ChlGroupTable, OutputDataTable, options, xlrdsheet, index, register='PBSC'):
@@ -39,8 +37,8 @@ class Xls2JsonMid(Xls2):
             if ( mergedCell[2]==11 ):
                 mergedCellsLen.append( mergedCell[1]-mergedCell[0] )
                 mergedCellsPos.append( mergedCell[1]-3 )
-        # print(mergedCellsPos)
-        # print(mergedCellsLen)
+        print(mergedCellsPos)
+        print(mergedCellsLen)
     
     
         
@@ -252,7 +250,7 @@ class Xls2JsonMid(Xls2):
                 REPEAT.append(CHL_TABLEX)
                 REPEAT.append('01 fa 10 27')
                 REPEAT.append('22')
-                Lenpop = int(mergedCellsPos.pop())
+                Lenpop = int(mergedCellsLen.pop(0))
                 # print(type(Lenpop))
                 # print(Lenpop)
                 RepeatNum = re.findall(".{2}", '{:>04}'.format(str(format(Lenpop, 'x'))))
@@ -260,9 +258,9 @@ class Xls2JsonMid(Xls2):
                 RepeatNum = ' '.join(RepeatNum)
                 REPEAT.append(RepeatNum)
     
-                # print(row)
-                # print(row +1-Lenpop)
-                # print(ModeTable.iloc[row+1-Lenpop, 11])
+                print(row)
+                print(row +1-Lenpop)
+                print(ModeTable.iloc[row+1-Lenpop, 11])
                 RepeatTimes = re.findall(".{2}", '{:>04}'.format(str(format(ModeTable.iloc[row+1-Lenpop, 11], 'x'))))
                 RepeatTimes.reverse()
                 RepeatTimes = ' '.join(RepeatTimes)
@@ -359,17 +357,20 @@ class Xls2JsonMid(Xls2):
             options = pd.read_excel(self.xlsfile,sheet_name='options',keep_default_na=False)
             workbook = xlrd.open_workbook(self.xlsfile,formatting_info=True)
             xlrdsheet = workbook.sheet_by_name(sheetModeTable)
+            print(str(i+1)+'th mode')
             self.OutputData.append(self.func_xls2json(ModeTable,ChlGroupTable,OutputDataTable,options,xlrdsheet,i,register=self.register))
 
 
 if __name__ == '__main__':
     xlsfile = sys.argv[1]
-    x2j = Xls2JsonMid(xlsfile,register='PBSC')
+    x2j = Xls2JsonMid(xlsfile,register='PBSC',productName=sys.argv[2])
     x2j.convert()
+    x2j.getfilename()
     output = x2j.get_data()
 
     for i in output:
-        outputname = 'outputMid' + str(output.index(i)+1) + '.json'
+        outputname = x2j.filename.pop(0) + '.json'
+        print(outputname)
         with open(outputname, 'w') as f:
             f.write(i)
             f.close()
