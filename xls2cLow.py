@@ -138,7 +138,7 @@ class Xls2CLow(Xls2):
         PulseWidthTable = pd.read_excel(self.xlsfile,sheet_name='s_PulseWidthTable',keep_default_na=False,usecols="A:F")
         DZCarrierTable = pd.read_excel(self.xlsfile,sheet_name='s_DZCarrierTable',keep_default_na=False,usecols="A:C")
         self.OutputData.extend(self.func_xls2c_1(ChlGroupTable, PulseWidthTable, DZCarrierTable))
-        self.getModeNumber()
+        self.cal_mode_number()
         for i in range(self.ModeNumber):
             sheetModeTable = 's_ModeTable#' + str(i+1)
             ModeTable = pd.read_excel(self.xlsfile,sheet_name=sheetModeTable,header=1,keep_default_na=False,usecols="A:M")

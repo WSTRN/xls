@@ -320,10 +320,10 @@ class Xls2JsonLow(Xls2):
         json_dict["CfgFile"] = CfgFileString
         json_dict["RecipeFile"] = RecipeFileString
         return json.dumps(json_dict, indent=4)
-    
 
     def convert(self):
-        self.getModeNumber()
+        self.cal_mode_number()
+        self.cal_filename()
         for i in range(self.ModeNumber):
             # Read the excel file
             sheetModeTable = 's_ModeTable#' + str(i+1)
@@ -333,16 +333,19 @@ class Xls2JsonLow(Xls2):
             DZCarrierTable = pd.read_excel(self.xlsfile,sheet_name='s_DZCarrierTable',keep_default_na=False,usecols="A:C")
             OutputDataTable = pd.read_excel(self.xlsfile,sheet_name='s_OutputDataTable',keep_default_na=False,usecols="A:C")
             options = pd.read_excel(self.xlsfile,sheet_name='options',keep_default_na=False)
+            print(str(i+1)+'th mode')
             self.OutputData.append(self.func_xls2json(ModeTable, ChlGroupTable, PulseWidthTable, DZCarrierTable, OutputDataTable, options, i))
 
 
 if __name__ == '__main__':
     xlsfile = sys.argv[1]
-    x2j = Xls2JsonLow(xlsfile)
+    x2j = Xls2JsonLow(xlsfile, sys.argv[2])
     x2j.convert()
     output = x2j.get_data()
+    
     for i in output:
-        outputname = 'outputLow' + str(output.index(i)) + '.json'
+        outputname = x2j.filename.pop(0) + '.json'
+        print(outputname)
         with open(outputname, 'w') as f:
             f.write(i)
             f.close()

@@ -49,7 +49,7 @@ class Xls2CMid(Xls2):
         
 
     def convert(self):
-        self.getModeNumber()
+        self.cal_mode_number()
         for i in range(self.ModeNumber):
             sheetModeTable = 's_ModeTable#' + str(i+1)
             ModeTable = pd.read_excel(self.xlsfile,sheet_name=sheetModeTable,header=1,keep_default_na=False,usecols="A:L")

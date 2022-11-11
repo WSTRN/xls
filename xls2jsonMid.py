@@ -347,7 +347,8 @@ class Xls2JsonMid(Xls2):
         return json.dumps(json_dict, indent=4)
     
     def convert(self):
-        self.getModeNumber()
+        self.cal_mode_number()
+        self.cal_filename()
         for i in range(self.ModeNumber):
             # Read the excel file
             sheetModeTable = 's_ModeTable#' + str(i+1)
@@ -365,7 +366,6 @@ if __name__ == '__main__':
     xlsfile = sys.argv[1]
     x2j = Xls2JsonMid(xlsfile,register='PBSC',productName=sys.argv[2])
     x2j.convert()
-    x2j.getfilename()
     output = x2j.get_data()
 
     for i in output:
