@@ -338,6 +338,9 @@ class Xls2JsonLow(Xls2):
 
 
 if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        print('Usage: xls2c.py <xls_file> <product_name>')
+        sys.exit(1)
     xlsfile = sys.argv[1]
     x2j = Xls2JsonLow(xlsfile, sys.argv[2])
     x2j.convert()
